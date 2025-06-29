@@ -8,9 +8,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Тестовый класс для проверки методов класса Feline
- */
+// Тестовый класс для проверки методов класса Feline
+
 class FelineTest {
 
     @Test

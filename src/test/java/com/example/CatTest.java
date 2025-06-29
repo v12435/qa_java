@@ -5,9 +5,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-/**
- * Исправленный тестовый класс для проверки методов класса Cat
- */
+// Исправленный тестовый класс для проверки методов класса Cat
+
 class CatTest {
 
     @Test

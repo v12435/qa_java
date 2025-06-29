@@ -2,9 +2,8 @@ package com.example;
 
 import java.util.List;
 
-/**
- * Класс Lion с инъекцией зависимости Feline
- */
+// Класс Lion с инъекцией зависимости Feline
+
 public class Lion {
 
     private boolean hasMane;
