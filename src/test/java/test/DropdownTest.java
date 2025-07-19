@@ -2,59 +2,50 @@ package test;
 
 import pageobject.MainPage;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import util.DriverFactory;
 
 public class DropdownTest {
     WebDriver driver;
     MainPage mainPage;
 
-    @Test
-    void testAllFaqItemsNotEmptyInChrome() {
-        runTestInBrowser("chrome");
+    @BeforeEach
+    void setUp() {
+        driver = DriverFactory.createDriver();
+        driver.get("https://qa-scooter.praktikum-services.ru/");
+        mainPage = new MainPage(driver);
+        mainPage.acceptCookies();
     }
 
-    @Test
-    void testAllFaqItemsNotEmptyInFirefox() {
-        runTestInBrowser("firefox");
-    }
-
-    private void runTestInBrowser(String browser) {
-        try {
-            driver = createDriver(browser);
-
-            driver.get("https://qa-scooter.praktikum-services.ru/");
-            mainPage = new MainPage(driver);
-            mainPage.acceptCookies();
-
-            int count = mainPage.getFaqQuestionsCount();
-            System.out.println("[" + browser + "] Всего вопросов в FAQ: " + count);
-
-            for (int i = 0; i < count; i++) {
-                System.out.println("[" + browser + "] Проверяем вопрос #" + i);
-                mainPage.scrollToFaqQuestion(i);
-                mainPage.clickFaqQuestion(i);
-                String answer = mainPage.getFaqAnswer(i);
-                System.out.println("[" + browser + "] Вопрос #" + i + " → ответ: [" + answer + "]");
-                Assertions.assertFalse(answer.isEmpty(),
-                        "[" + browser + "] Ответ не должен быть пустым для вопроса #" + i);
-            }
-        } finally {
-            if (driver != null) {
-                driver.quit();
-            }
+    @AfterEach
+    void tearDown() {
+        if (driver != null) {
+            driver.quit();
         }
     }
 
-    private WebDriver createDriver(String browser) {
-        switch (browser) {
-            case "chrome":
-                return new ChromeDriver();
-            case "firefox":
-                return new FirefoxDriver();
-            default:
-                throw new RuntimeException("Unknown browser: " + browser);
-        }
+    @ParameterizedTest(name = "FAQ: {1}")
+    @CsvSource({
+            "0, Сколько это стоит? И как оплатить?",
+            "1, Хочу сразу несколько самокатов! Так можно?",
+            "2, Как рассчитывается время аренды?",
+            "3, Можно ли заказать самокат прямо на сегодня?",
+            "4, Можно ли продлить заказ или вернуть самокат раньше?",
+            "5, Вы привозите зарядку вместе с самокатом?",
+            "6, Можно ли отменить заказ?",
+            "7, Я живу за МКАДом, привезёте?"
+    })
+    void testFaqAnswerNotEmpty(int index, String questionText) {
+        mainPage.scrollToFaqQuestion(index);
+        mainPage.clickFaqQuestion(index);
+        String answer = mainPage.getFaqAnswer(index);
+
+        System.out.println("Вопрос: " + questionText);
+        System.out.println("Ответ: " + answer); // вывод в консоль ответов для отладки
+        
+        Assertions.assertFalse(answer.isEmpty(),
+                "Ответ не должен быть пустым для вопроса: " + questionText); // содержимое ответов меняется, поэтому ассерт только на то, что поле не пустое
     }
 }
